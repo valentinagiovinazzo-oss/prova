@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cercaparola – Casa Leopardi</title>
+<style>
+:root{--ink:#3b2412;--sepia:#8a5a2b;--paper:#efdfba;--paper2:#e3cb98;--edge:#9c7440;--red:#8c2f1b}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{font-family:Georgia,"Palatino Linotype",Palatino,"Book Antiqua",serif;color:var(--ink);
+background:radial-gradient(ellipse at center,var(--paper) 40%,var(--paper2) 85%,#c9a96c 100%);
+display:flex;align-items:center;justify-content:center;padding:8px}
+.wrap{width:100%;max-width:980px;border:3px double var(--edge);padding:10px 14px 12px;
+background:rgba(255,248,226,.35);box-shadow:inset 0 0 40px rgba(120,80,30,.25),0 2px 10px rgba(60,35,10,.3)}
+h1{margin:0;text-align:center;font-style:italic;font-weight:normal;font-size:clamp(18px,3.4vw,28px);letter-spacing:.5px}
+.sub{margin:2px 0 8px;text-align:center;font-size:clamp(11px,1.7vw,13.5px);color:var(--sepia);font-style:italic;
+border-bottom:1px solid var(--edge);padding-bottom:6px}
+.main{display:flex;gap:14px;align-items:flex-start}
+.list{flex:0 0 34%;min-width:0}
+.list h2{margin:0 0 4px;font-size:14px;font-weight:normal;font-style:italic;color:var(--sepia)}
+ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:1px 8px}
+li{font-size:clamp(10.5px,1.55vw,13.5px);padding:2px 0 2px 16px;position:relative;border-bottom:1px dotted rgba(140,100,50,.4);
+letter-spacing:.4px;transition:color .3s}
+li::before{content:"";position:absolute;left:1px;top:50%;width:9px;height:9px;margin-top:-5px;border:1.5px solid var(--sepia);border-radius:2px}
+li.ok{color:rgba(59,36,18,.55);text-decoration:line-through;text-decoration-color:var(--red);text-decoration-thickness:2px}
+li.ok::before{background:var(--red);border-color:var(--red)}
+li.ok::after{content:"✓";position:absolute;left:2.5px;top:50%;margin-top:-7px;font-size:10px;color:#f5e6c4;text-decoration:none}
+.count{margin-top:8px;font-size:13px;text-align:center;color:var(--sepia);font-style:italic}
+.gw{flex:1;min-width:0;display:flex;justify-content:center}
+.grid{width:min(100%,max(280px,calc(100vh - 110px)));aspect-ratio:1;display:grid;grid-template-columns:repeat(15,1fr);
+container-type:inline-size;border:2px solid var(--edge);background:rgba(255,250,232,.45);touch-action:none;
+user-select:none;-webkit-user-select:none;cursor:pointer}
+.c{display:flex;align-items:center;justify-content:center;font-size:3.3vmin;font-size:calc(100cqw / 15 * .56);
+font-weight:bold;border:.5px solid rgba(140,100,50,.18);position:relative}
+.c.sel{background:rgba(60,35,10,.28)}
+.c.pend{background:rgba(60,35,10,.4);color:#fff6dc}
+.c.f0{background:rgba(231,190,50,.62)}
+.c.f1{background:rgba(214,120,70,.5)}
+.c.f2{background:rgba(120,140,170,.5)}
+.c.f3{background:rgba(150,170,90,.55)}
+.ov{position:fixed;inset:0;background:rgba(40,22,8,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+.ov.on{display:flex}
+.card{max-width:460px;text-align:center;padding:22px 24px;background:var(--paper);border:4px double var(--edge);
+box-shadow:0 6px 30px rgba(0,0,0,.5),inset 0 0 40px rgba(120,80,30,.3);animation:pop .45s ease}
+.card h3{margin:0 0 10px;font-style:italic;font-weight:normal;font-size:24px;color:var(--red)}
+.card p{margin:0 0 14px;line-height:1.5;font-size:16px}
+.card b{display:inline-block;margin:2px 0;padding:2px 12px;border:2px solid var(--red);font-size:20px;letter-spacing:3px;color:var(--red)}
+button{font:inherit;font-size:14px;padding:6px 18px;color:#f5e6c4;background:var(--ink);border:2px solid var(--edge);cursor:pointer}
+button:focus-visible{outline:3px solid var(--red);outline-offset:2px}
+@keyframes pop{from{transform:scale(.85);opacity:0}to{transform:scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.card{animation:none}}
+@media (max-width:640px){.main{flex-direction:column;align-items:stretch}.list{flex:none}ul{grid-template-columns:repeat(3,1fr)}.grid{width:100%}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>Il Cercaparola di Casa Leopardi</h1>
+<p class="sub">Trascina sulle lettere, oppure tocca la prima e l’ultima. Fra le lettere si cela anche una parola segreta.</p>
+<div class="main">
+<div class="list"><h2>Parole da cercare</h2><ul id="L"></ul><div class="count" id="K"></div></div>
+<div class="gw"><div class="grid" id="G"></div></div>
+</div>
+</div>
+<div class="ov" id="O" role="dialog" aria-modal="true"><div class="card">
+<h3>Eccellente!</h3>
+<p>Hai decifrato il messaggio segreto della Posta di Casa Leopardi! La parola d’ordine è:<br><b>PASQUINATA</b><br>Inseriscila nel lucchetto sulla Scrivania di Monaldo per sbloccare la porta verso il Colle del Tabor!</p>
+<button id="X">Chiudi</button></div></div>
+<script>
+(function(){
+var WORDS="GIACOMO,MONALDO,ADELAIDE,CARLO,PAOLINA,RECANATI,BIBLIOTECA,LEOPARDI,POESIA,COLLE,TABOR,SIEPE,INFINITO,SILENZIO,STUDIO,PALAZZO,LETTERE,POSTA,BAMBINI,INGEGNO,ENIGMA,FILOSOFIA,ASTRONOMIA,FISICA,FILOLOGIA".split(","),
+SECRET="PASQUINATA",N=15,ALL=WORDS.concat(SECRET),
+DIRS=[[0,1],[1,0],[1,1],[-1,1],[0,-1],[-1,0],[-1,-1],[1,-1]],
+FILL="AAAEEEEIIIOOONNRRSSTTLLCDMPUBGFVZH";
+
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+
+function build(seed){
+  var R=rng(seed),g=[],pl={},i,j;
+  for(i=0;i<N*N;i++)g.push("");
+  var order=ALL.slice().sort(function(a,b){return b.length-a.length});
+  for(var w=0;w<order.length;w++){
+    var word=order[w],ok=false;
+    for(var t=0;t<500&&!ok;t++){
+      var d=DIRS[Math.floor(R()*8)],r=Math.floor(R()*N),c=Math.floor(R()*N),
+          er=r+d[0]*(word.length-1),ec=c+d[1]*(word.length-1);
+      if(er<0||er>=N||ec<0||ec>=N)continue;
+      var cells=[],good=true;
+      for(j=0;j<word.length;j++){
+        var k=(r+d[0]*j)*N+c+d[1]*j;
+        if(g[k]&&g[k]!==word[j]){good=false;break}
+        cells.push(k);
+      }
+      if(!good)continue;
+      for(j=0;j<word.length;j++)g[cells[j]]=word[j];
+      pl[word]=cells;ok=true;
+    }
+    if(!ok)return null;
+  }
+  for(i=0;i<N*N;i++)if(!g[i])g[i]=FILL[Math.floor(R()*FILL.length)];
+  return{g:g,pl:pl};
+}
+var B=null,seed=7;
+while(!(B=build(seed)))seed++;
+var grid=B.g,pl=B.pl;
+
+var G=document.getElementById("G"),L=document.getElementById("L"),K=document.getElementById("K"),O=document.getElementById("O"),
+cells=[],items={},found={},nFound=0;
+grid.forEach(function(ch,i){var d=document.createElement("div");d.className="c";d.textContent=ch;G.appendChild(d);cells.push(d)});
+WORDS.forEach(function(w){var li=document.createElement("li");li.textContent=w;L.appendChild(li);items[w]=li});
+function count(){K.textContent="Trovate "+nFound+" su "+WORDS.length}
+count();
+
+function at(e){
+  var r=G.getBoundingClientRect(),
+  c=Math.floor((e.clientX-r.left)/r.width*N),rw=Math.floor((e.clientY-r.top)/r.height*N);
+  c=Math.max(0,Math.min(N-1,c));rw=Math.max(0,Math.min(N-1,rw));
+  return rw*N+c;
+}
+function line(a,b){
+  var r1=Math.floor(a/N),c1=a%N,dr=Math.floor(b/N)-r1,dc=b%N-c1;
+  if(!dr&&!dc)return[a];
+  var s=Math.round(Math.atan2(dr,dc)/(Math.PI/4)),sr=Math.round(Math.sin(s*Math.PI/4)),sc=Math.round(Math.cos(s*Math.PI/4)),
+  len=Math.max(Math.abs(dr),Math.abs(dc)),out=[];
+  for(var i=0;i<=len;i++){
+    var rr=r1+sr*i,cc=c1+sc*i;
+    if(rr<0||rr>=N||cc<0||cc>=N)break;
+    out.push(rr*N+cc);
+  }
+  return out;
+}
+function clear(){cells.forEach(function(c){c.classList.remove("sel","pend")})}
+function show(arr){clear();arr.forEach(function(i){cells[i].classList.add("sel")})}
+
+function finish(a,b){
+  var ln=line(a,b);clear();
+  if(ln.length<2)return;
+  var s=ln.map(function(i){return grid[i]}).join(""),rs=s.split("").reverse().join("");
+  for(var i=0;i<ALL.length;i++){
+    var w=ALL[i];
+    if(!found[w]&&(s===w||rs===w)){
+      found[w]=1;
+      var cls="f"+(Object.keys(found).length%4);
+      ln.forEach(function(k){cells[k].classList.remove("f0","f1","f2","f3");cells[k].classList.add(cls)});
+      if(items[w]){items[w].classList.add("ok");nFound++;count()}
+      if(w===SECRET||nFound===WORDS.length)setTimeout(function(){O.classList.add("on")},350);
+      return;
+    }
+  }
+}
+
+var start=null,pend=null,drag=false,moved=false;
+G.addEventListener("pointerdown",function(e){
+  e.preventDefault();
+  try{G.setPointerCapture(e.pointerId)}catch(x){}
+  start=at(e);drag=true;moved=false;
+});
+G.addEventListener("pointermove",function(e){
+  if(!drag)return;
+  var i=at(e);
+  if(i!==start)moved=true;
+  if(moved)show(line(start,i));
+});
+function up(e){
+  if(!drag)return;
+  drag=false;
+  var i=at(e);
+  if(moved&&i!==start){pend=null;finish(start,i)}
+  else if(pend===null){pend=start;clear();cells[start].classList.add("pend")}
+  else if(pend===start){pend=null;clear()}
+  else{var p=pend;pend=null;finish(p,start)}
+}
+G.addEventListener("pointerup",up);
+G.addEventListener("pointercancel",function(){drag=false;pend=null;clear()});
+document.getElementById("X").onclick=function(){O.classList.remove("on")};
+})();
+</script>
+</body>
+</html>
